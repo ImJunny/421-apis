@@ -48,10 +48,9 @@ async function getImages() {
     statsContainer.appendChild(comments);
     statsContainer.appendChild(views);
     galleryContainer.appendChild(card);
-    card.addEventListener('click',(item.)=>{
-      let modal = document.createElement('div')
-      modal.setAttribute('class','modal')
-
-    })
+    card.addEventListener("click", () => {
+      let modal = document.createElement("div");
+      modal.setAttribute("class", "modal");
+    });
   });
 }
