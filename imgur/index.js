@@ -1,15 +1,19 @@
+// Imgur id and secret
 let client_id = "138aa51bce2bf1b";
 let client_secret = "9e655be89ff8e57c8c8ffc7096d8a7192c70356f";
 
 let galleryContainer = document.getElementById("galleryContainer");
+
+// Function gets input and uses imgur api to fetch data, manipulating the DOM for every item.
 async function getImages() {
+  // Get input. If empty, then do nothing.
   let query = document.getElementById("input").value;
   if (query == "") {
     console.log("input needed");
     return;
   }
+  // Fetch data with input if not empty.
 
-  console.log("processing");
   let res = await fetch(
     `https://api.imgur.com/3/gallery/search/{{sort}}/{{window}}/{{page}}?q=${query}`,
     {
@@ -22,7 +26,9 @@ async function getImages() {
   let dataArr = data.data;
   galleryContainer.innerHTML = "";
   console.log(dataArr);
+  // Manipulate DOM to render data as cards
   dataArr.forEach((item) => {
+    if (item.images[0].link.includes("mp4")) return;
     let card = document.createElement("div");
     card.setAttribute("class", "card");
     let title = document.createElement("h1");
