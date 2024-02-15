@@ -8,6 +8,11 @@ body {
   background-color: black;
 }
 
+p{
+  color:white;
+  text-align: center;
+}
+
 #board {
   margin: auto;
   background-color: #4d4d4d;
@@ -21,7 +26,6 @@ body {
 
 #board p {
   font-size: 100px;
-  color: white;
 }
 
 .cell {
