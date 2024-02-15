@@ -12,8 +12,8 @@ async function getImages() {
     console.log("input needed");
     return;
   }
-  // Fetch data with input if not empty.
 
+  // Fetch images with input if not empty
   let res = await fetch(
     `https://api.imgur.com/3/gallery/search/{{sort}}/{{window}}/{{page}}?q=${query}`,
     {
@@ -24,11 +24,12 @@ async function getImages() {
   );
   let data = await res.json();
   let dataArr = data.data;
-  galleryContainer.innerHTML = "";
-  console.log(dataArr);
+
   // Manipulate DOM to render data as cards
+  galleryContainer.innerHTML = "";
   dataArr.forEach((item) => {
-    if (item.images[0].link.includes("mp4")) return;
+    // If post has image and is NOT mp4, render; mp4 files will not render
+    if (!item.images || item.images[0].link.includes("mp4")) return;
     let card = document.createElement("div");
     card.setAttribute("class", "card");
     let title = document.createElement("h1");
@@ -43,9 +44,9 @@ async function getImages() {
     likes.innerText = item.ups + " likes";
     comments.innerText = item.comment_count + " comments";
     views.innerText = item.views + " views";
-    if (item.images[0] != undefined) {
-      img.src = item.images[0].link;
-    }
+    // If image has a link, render out img
+    img.src = item.images[0].link;
+
 
     card.appendChild(img);
     card.appendChild(title);
@@ -55,8 +56,54 @@ async function getImages() {
     statsContainer.appendChild(views);
     galleryContainer.appendChild(card);
     card.addEventListener("click", () => {
-      let modal = document.createElement("div");
-      modal.setAttribute("class", "modal");
+      let id = item.id;
+      getComments(id)
     });
   });
+}
+
+// Function takes clicked image and retrieves comments, displaying them in a modal
+async function getComments(id){
+  // Fetch comments using passed image id
+  let res = await fetch(`https://api.imgur.com/3/gallery/${id}/comments/best`,
+  {
+    headers: {
+      Authorization: `Client-ID ${client_id}`,
+    },
+  })
+  let data = await res.json()
+  let commentsArr = data.data
+
+
+  // Manipulate DOM to render comments in a modal
+  let modalBg = document.createElement("div");
+  modalBg.setAttribute("class", "modalBg");
+  let modal = document.createElement("div");
+  modal.setAttribute("class", "modal");
+  let closeBtn = document.createElement('button')
+  closeBtn.setAttribute('class','closeBtn')
+  closeBtn.innerText = "X"
+  modal.appendChild(closeBtn)
+  closeBtn.addEventListener('click',()=>modalBg.remove())
+  let commentContainer = document.createElement('div')
+  commentContainer.setAttribute('class','commentContainer')
+
+  // Show comments according to whether commentsArr has actual items
+  if(commentsArr==0){
+    let comment = document.createElement('p');
+    comment.setAttribute('class','comment')
+    comment.innerText = "*No comments*"
+    commentContainer.append(comment)
+  }else{
+    commentsArr.forEach(item=>{
+      let comment = document.createElement('p');
+      comment.setAttribute('class','comment')
+      comment.innerText = item.comment
+      commentContainer.appendChild(comment)
+    })
+  }
+
+  modal.appendChild(commentContainer)
+  modalBg.appendChild(modal)
+  galleryContainer.appendChild(modalBg)
 }
